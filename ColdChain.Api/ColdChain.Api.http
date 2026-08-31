@@ -1,0 +1,70 @@
+@host = http://localhost:5165
+
+### Gateway status
+GET {{host}}/
+
+### All registered devices
+GET {{host}}/api/devices
+
+### Filtered devices
+GET {{host}}/api/devices?deviceType=Temperature&isActive=true
+
+### The location hierarchy
+GET {{host}}/api/locations
+
+### Recursive location validation (valid leaf)
+GET {{host}}/api/locations/validate/SH-JHB-01A
+
+### Recursive location validation (exists but is a grouping level)
+GET {{host}}/api/locations/validate/DEP-JHB
+
+### Recursive location validation (does not exist)
+GET {{host}}/api/locations/validate/SH-CPT-99Z
+
+### Register a device
+POST {{host}}/api/devices
+Content-Type: application/json
+
+{
+  "deviceId": "TMP-006",
+  "deviceName": "PTA Shelf B Probe",
+  "deviceType": "Temperature",
+  "locationCode": "SH-PTA-01B",
+  "isActive": true
+}
+
+### Registration that fails every rule
+POST {{host}}/api/devices
+Content-Type: application/json
+
+{
+  "deviceId": "nope",
+  "deviceName": "X",
+  "deviceType": "Toaster",
+  "locationCode": "SH-MARS-01A",
+  "isActive": true
+}
+
+### Mixed telemetry (look at the valueType column: Double, Int32, Boolean)
+GET {{host}}/api/telemetry?take=30
+
+### Anomalous telemetry only
+GET {{host}}/api/telemetry?onlyAnomalies=true&take=30
+
+### The jagged monitoring-zone array
+GET {{host}}/api/telemetry/zones
+
+### Zone average, produced by the overloaded + operator
+GET {{host}}/api/telemetry/zones/0/average-temperature
+
+### Outstanding anomalies
+GET {{host}}/api/anomalies?acknowledged=false
+
+### Acknowledge anomaly 1
+POST {{host}}/api/anomalies/1/acknowledge
+Content-Type: application/json
+
+{
+  "operatorName": "S. Operator",
+  "note": "Door was left open during a stock take. Closed and verified temperature recovery."
+}
